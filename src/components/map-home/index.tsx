@@ -1,108 +1,109 @@
 'use client';
-import React, { useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, useMap } from 'react-leaflet';
+import React from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 import L, { LatLngExpression } from 'leaflet';
 // import * as protomapsL from 'protomaps-leaflet';
-import { FeatureCollection } from 'geojson';
+// import { FeatureCollection } from 'geojson';
 
 interface MapProps {
   dataset?: any;
   image?: any;
 }
 
-const bboxPolygon = (bounds: number[]) => {
-  const LL_EPSILON = 1e-6;
-  return {
-    type: 'Feature',
-    geometry: {
-      type: 'Polygon',
-      coordinates: [
-        [
-          [bounds[0] + LL_EPSILON, bounds[1] + LL_EPSILON],
-          [bounds[2] - LL_EPSILON, bounds[1] + LL_EPSILON],
-          [bounds[2] - LL_EPSILON, bounds[3] - LL_EPSILON],
-          [bounds[0] + LL_EPSILON, bounds[3] - LL_EPSILON],
-          [bounds[0] + LL_EPSILON, bounds[1] + LL_EPSILON]
-        ]
-      ]
-    },
-    properties: {}
-  };
-};
+// const bboxPolygon = (bounds: number[]) => {
+//   const LL_EPSILON = 1e-6;
+//   return {
+//     type: 'Feature',
+//     geometry: {
+//       type: 'Polygon',
+//       coordinates: [
+//         [
+//           [bounds[0] + LL_EPSILON, bounds[1] + LL_EPSILON],
+//           [bounds[2] - LL_EPSILON, bounds[1] + LL_EPSILON],
+//           [bounds[2] - LL_EPSILON, bounds[3] - LL_EPSILON],
+//           [bounds[0] + LL_EPSILON, bounds[3] - LL_EPSILON],
+//           [bounds[0] + LL_EPSILON, bounds[1] + LL_EPSILON]
+//         ]
+//       ]
+//     },
+//     properties: {}
+//   };
+// };
 
 // function MvtLayer({ tileJsonUrl, tileUrl }: { tileJsonUrl: string; tileUrl: string }) {
-function MvtLayer() {
-  const map = useMap();
+// function MvtLayer({ dataset }: { dataset: any }) {
+//   const map = useMap();
+//   console.log('aaaa', dataset);
+//   const path = process.env.NEXT_PUBLIC_API_PATH || 'http://localhost:8081/v1/';
 
-  const path = process.env.NEXT_PUBLIC_API_PATH || 'http://localhost:8081/v1/';
+//   // const tileJsonUrl = `http://0.0.0.0:8081/v1/ogc-tiles/collections/public.images/tiles/WebMercatorQuad/tilejson.json?dataset_id=${dataset.id}`;
+//   // const tileUrl = `http://0.0.0.0:8081/v1/ogc-tiles/collections/public.images/tiles/WebMercatorQuad/{z}/{x}/{y}?dataset_id=${dataset.id}`;
+//   const tileJsonUrl = `${path}ogc-tiles/collections/public.images/tiles/WebMercatorQuad/tilejson.json?dataset_id=${dataset.id}`;
+//   // const tileUrl = `http://0.0.0.0:8081/collections/public.images/tiles/WebMercatorQuad/{z}/{x}/{y}`;
+//   console.log('tileJsonUrl', tileJsonUrl);
 
-  // const tileJsonUrl = `http://0.0.0.0:8081/v1/ogc-tiles/collections/public.images/tiles/WebMercatorQuad/tilejson.json?dataset_id=${dataset.id}`;
-  // const tileUrl = `http://0.0.0.0:8081/v1/ogc-tiles/collections/public.images/tiles/WebMercatorQuad/{z}/{x}/{y}?dataset_id=${dataset.id}`;
-  const tileJsonUrl = `${path}collections/public.images/tiles/WebMercatorQuad/tilejson.json`;
-  // const tileUrl = `http://0.0.0.0:8081/collections/public.images/tiles/WebMercatorQuad/{z}/{x}/{y}`;
+//   useEffect(() => {
+//     fetch(tileJsonUrl)
+//       .then(res => {
+//         if (!res.ok) throw new Error('Failed to fetch TileJSON');
+//         return res.json();
+//       })
+//       .then(data => {
+//         // Adjust bounds
+//         const bounds = [...data.bounds];
+//         // Optional clipping with dataset's known bbox from API
+//         // bounds = [
+//         //   Math.max(bounds[0], minX),
+//         //   Math.max(bounds[1], minY),
+//         //   Math.min(bounds[2], maxX),
+//         //   Math.min(bounds[3], maxY)
+//         // ];
 
-  useEffect(() => {
-    fetch(tileJsonUrl)
-      .then(res => {
-        if (!res.ok) throw new Error('Failed to fetch TileJSON');
-        return res.json();
-      })
-      .then(data => {
-        // Adjust bounds
-        const bounds = [...data.bounds];
-        // Optional clipping with dataset's known bbox from API
-        // bounds = [
-        //   Math.max(bounds[0], minX),
-        //   Math.max(bounds[1], minY),
-        //   Math.min(bounds[2], maxX),
-        //   Math.min(bounds[3], maxY)
-        // ];
+//         // Create bounding box GeoJSON & fit map
+//         const geo = {
+//           type: 'FeatureCollection',
+//           features: [bboxPolygon(bounds)]
+//         } as FeatureCollection;
+//         map.fitBounds(L.geoJSON(geo).getBounds());
 
-        // Create bounding box GeoJSON & fit map
-        const geo = {
-          type: 'FeatureCollection',
-          features: [bboxPolygon(bounds)]
-        } as FeatureCollection;
-        map.fitBounds(L.geoJSON(geo).getBounds());
+//         // add the geo to the map
+//         map.addLayer(
+//           L.geoJSON(geo, {
+//             style: {
+//               color: '#0062ff',
+//               fillColor: '#82b2ff',
+//               weight: 2,
+//               fillOpacity: 0.5
+//             }
+//           })
+//         );
 
-        // add the geo to the map
-        map.addLayer(
-          L.geoJSON(geo, {
-            style: {
-              color: '#0062ff',
-              fillColor: '#82b2ff',
-              weight: 2,
-              fillOpacity: 0.5
-            }
-          })
-        );
+//         // Prepare paint rules
+//         // const layer = Object.values(data.vector_layers)[0] as any;
+//         // const paintRules = [
+//         //   {
+//         //     dataLayer: layer.id,
+//         //     symbolizer: new protomapsL.LineSymbolizer({
+//         //       color: '#000000',
+//         //       width: 2
+//         //     }),
+//         //     minzoom: layer.minzoom,
+//         //     maxzoom: layer.maxzoom
+//         //   }
+//         // ];
 
-        // Prepare paint rules
-        // const layer = Object.values(data.vector_layers)[0] as any;
-        // const paintRules = [
-        //   {
-        //     dataLayer: layer.id,
-        //     symbolizer: new protomapsL.LineSymbolizer({
-        //       color: '#000000',
-        //       width: 2
-        //     }),
-        //     minzoom: layer.minzoom,
-        //     maxzoom: layer.maxzoom
-        //   }
-        // ];
+//         // Add protomaps vector layer
+//         // protomapsL.leafletLayer({ url: tileUrl }).addTo(map);
+//         // protomapsL.leafletLayer({ url: tileUrl, paintRules }).addTo(map);
+//       })
+//       .catch(err => {
+//         console.warn(err);
+//       });
+//   }, [tileJsonUrl, map]);
 
-        // Add protomaps vector layer
-        // protomapsL.leafletLayer({ url: tileUrl }).addTo(map);
-        // protomapsL.leafletLayer({ url: tileUrl, paintRules }).addTo(map);
-      })
-      .catch(err => {
-        console.warn(err);
-      });
-  }, [tileJsonUrl, map]);
-
-  return null;
-}
+//   return null;
+// }
 
 export default function MapHome({ dataset, image }: MapProps) {
   let position: LatLngExpression;
@@ -165,8 +166,7 @@ export default function MapHome({ dataset, image }: MapProps) {
             </Marker>
           ))
         )}
-        {dataset && <MvtLayer />}
-        {/* <MvtLayer tileJsonUrl={tileJsonUrl} tileUrl={tileUrl} /> */}
+        {/* {dataset && <MvtLayer dataset={dataset} />} */}
       </MapContainer>
     </div>
   );
