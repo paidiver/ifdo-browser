@@ -113,8 +113,9 @@ export default function MapHome({ dataset, image }: MapProps) {
   } else {
     position = [dataset.latitude || 0, dataset.longitude || 0];
   }
+  const basePath = process.env.NODE_ENV === 'production' ? '/ifdo-browser' : '';
   const icon = L.icon({
-    iconUrl: '/marker-icon.png',
+    iconUrl: `${basePath}/marker-icon.png`,
     iconSize: [10, 10]
   });
 
