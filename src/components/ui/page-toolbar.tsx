@@ -12,6 +12,8 @@ export interface PageToolbarProps extends ToolbarProps {
 
 export function PageToolbar({ title, divider = true, previous = null }: PageToolbarProps) {
   const newTitle = title || 'iFDO Browser';
+  const basePath = process.env.NODE_ENV === 'production' ? '/ifdo-browser' : '';
+
   return (
     <div>
       <Head>
@@ -28,7 +30,10 @@ export function PageToolbar({ title, divider = true, previous = null }: PageTool
           {previous && (
             <div className="flex justify-start items-center">
               <p>In</p>
-              <a href={`/${previous.url}`} className="text-blue-600 hover:underline px-2">
+              <a
+                href={`${basePath}/${previous.url}`}
+                className="text-blue-600 hover:underline px-2"
+              >
                 {previous.name.length > 100 ? `${previous.name.slice(0, 100)}...` : previous.name}
               </a>
               <Button

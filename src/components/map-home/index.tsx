@@ -126,7 +126,7 @@ export default function MapHome({ dataset, image }: MapProps) {
           attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        {image ? (
+        {image && image?.latitude && image?.longitude ? (
           <Marker position={[image.latitude, image.longitude]} icon={icon} key={image.id}>
             <Popup>
               <div>
@@ -146,26 +146,30 @@ export default function MapHome({ dataset, image }: MapProps) {
             </Popup>
           </Marker>
         ) : (
-          dataset.images.map((image: any) => (
-            <Marker position={[image.latitude, image.longitude]} icon={icon} key={image.id}>
-              <Popup>
-                <div>
-                  <strong>{image.name}</strong>
-                  <p>
-                    Lat: {image.latitude}, Lon: {image.longitude}
-                  </p>
-                  <p>
-                    <a
-                      href={`/image?id=${image.id}&dataset_id=${image.dataset_id}`}
-                      className="text-blue-500 hover:underline"
-                    >
-                      View Image
-                    </a>
-                  </p>
-                </div>
-              </Popup>
-            </Marker>
-          ))
+          dataset.images.map(
+            (image: any) =>
+              image.latitude &&
+              image.longitude && (
+                <Marker position={[image.latitude, image.longitude]} icon={icon} key={image.id}>
+                  <Popup>
+                    <div>
+                      <strong>{image.name}</strong>
+                      <p>
+                        Lat: {image.latitude}, Lon: {image.longitude}
+                      </p>
+                      <p>
+                        <a
+                          href={`/image?id=${image.id}&dataset_id=${image.dataset_id}`}
+                          className="text-blue-500 hover:underline"
+                        >
+                          View Image
+                        </a>
+                      </p>
+                    </div>
+                  </Popup>
+                </Marker>
+              )
+          )
         )}
         {/* {dataset && <MvtLayer dataset={dataset} />} */}
       </MapContainer>
