@@ -20,7 +20,6 @@ function ImagePageContent() {
   const searchParams = useSearchParams();
   const paramsId = searchParams.get('id');
   const datasetId = searchParams.get('dataset_id');
-  console.log(`datasets/${datasetId}?include_images=False`);
 
   useEffect(() => {
     fetchApiData(`images/${paramsId}?replace_dataset=True`, setImage);
@@ -30,7 +29,6 @@ function ImagePageContent() {
   if (!image || !dataset) {
     return <CircularProgress />;
   }
-  console.log(image);
   return (
     <React.Fragment>
       <PageToolbar
@@ -63,7 +61,7 @@ function ImagePageContent() {
                 <img
                   src={image.handle}
                   alt={image.name}
-                  className="w-full h-auto rounded shadow-sm"
+                  className="h-[500px] w-auto rounded shadow-sm"
                 />
               ) : (
                 <p className="text-red-500">No image available</p>
