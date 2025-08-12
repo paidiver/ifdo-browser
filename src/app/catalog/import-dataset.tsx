@@ -1,54 +1,77 @@
 'use client';
 import React, { useState } from 'react';
-import { TextField, Button, Select, MenuItem } from '@mui/material';
+import { TextField, Button, Select, MenuItem, CircularProgress } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-// import { fetchApiData } from '@/data-access/fetch-api-data';
+import { fetchApiData } from '@/data-access/fetch-api-data';
+import { SelectChangeEvent } from '@mui/material';
 
 export function ImportDataset() {
   const [query, setQuery] = useState('');
+  const [fileObj, setFileObj] = useState<File | null>(null);
   const [ifdoFormat, setIfdoFormat] = useState('file');
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = event => {
-    setIfdoFormat(event.target.value);
+  const handleChange = (event: SelectChangeEvent) => {
+    setIfdoFormat(event.target.value as 'file' | 'url');
     setQuery('');
+    setFileObj(null);
   };
-  const handleLoad = () => {
-    // if (ifdoFormat === 'file') {
-    //   fetchApiData('catalogs/', setCatalog);
-    //     console.log('Loading file:', file.name);
-    //     // Here you would typically handle the file upload
-    //   } else {
-    //     console.error('No file selected');
-    //   }
-    // } else {
-    //   console.log('Loading from URL:', query);
-    //   // Here you would typically handle the URL import
-    // }
-    setQuery('');
+
+  const handleLoad = async () => {
+    try {
+      setLoading(true);
+
+      let body: FormData | Record<string, any> | null = null;
+
+      if (ifdoFormat === 'file') {
+        if (!fileObj) {
+          console.error('No file selected');
+          setLoading(false);
+          return;
+        }
+        body = new FormData();
+        body.append('input_file', fileObj, fileObj.name);
+      } else {
+        if (!query.trim()) {
+          console.error('No URL provided');
+          setLoading(false);
+          return;
+        }
+        body = { input_data: query.trim() };
+      }
+      const endpoint = ifdoFormat === 'file' ? 'datasets/ifdo/file' : 'datasets/ifdo/url';
+
+      const data = await fetchApiData(endpoint, null, 'POST', body);
+      console.log('Import successful:', data);
+
+      window.location.reload();
+    } catch (err) {
+      console.error('Import failed:', err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="py-2">
-      <p>Please import a dataset (iFDO file)... </p>
+      <p>Please import a dataset (iFDO file)...</p>
       <div className="flex flex-row items-center gap-4">
-        <Select
-          className="w-40 h-10"
-          labelId="demo-simple-select-standard-label"
-          id="demo-simple-select-standard"
-          value={ifdoFormat}
-          onChange={handleChange}
-          label="keyword"
-        >
+        <Select className="w-40 h-10" value={ifdoFormat} onChange={handleChange}>
           <MenuItem value={'file'}>File</MenuItem>
           <MenuItem value={'url'}>Url</MenuItem>
         </Select>
+
         {ifdoFormat === 'file' ? (
           <TextField
             type="file"
             variant="outlined"
             size="small"
             className="flex-1 bg-white rounded"
-            onChange={e => setQuery((e.target as HTMLInputElement).files?.[0]?.name || '')}
+            onChange={e => {
+              const file = (e.target as HTMLInputElement).files?.[0] || null;
+              setFileObj(file);
+              setQuery(file?.name || '');
+            }}
           />
         ) : (
           <TextField
@@ -63,8 +86,15 @@ export function ImportDataset() {
             className="flex-1 bg-white rounded"
           />
         )}
-        <Button variant="contained" color="primary" onClick={handleLoad} disabled={!query}>
-          Import
+
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleLoad}
+          disabled={loading || (ifdoFormat === 'file' ? !fileObj : !query.trim())}
+          startIcon={loading ? <CircularProgress size={20} color="inherit" /> : undefined}
+        >
+          {loading ? 'Importing...' : 'Import'}
         </Button>
       </div>
     </div>
