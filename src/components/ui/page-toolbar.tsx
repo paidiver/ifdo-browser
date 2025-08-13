@@ -40,7 +40,7 @@ export function PageToolbar({ title, divider = true, previous = null }: PageTool
                 className="ml-2 p-2"
                 variant="outlined"
                 startIcon={<KeyboardReturnIcon />}
-                href={`/${previous.url}`}
+                href={`${basePath}/${previous.url}`}
               >
                 Up
               </Button>
