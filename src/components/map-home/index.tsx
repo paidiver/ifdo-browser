@@ -136,7 +136,7 @@ export default function MapHome({ dataset, image }: MapProps) {
                 </p>
                 <p>
                   <a
-                    href={`/image?id=${image.id}&dataset_id=${image.dataset_id}`}
+                    href={`${basePath}/image?id=${image.id}&dataset_id=${image.dataset_id}`}
                     className="text-blue-500 hover:underline"
                   >
                     View Image
@@ -159,7 +159,7 @@ export default function MapHome({ dataset, image }: MapProps) {
                       </p>
                       <p>
                         <a
-                          href={`/image?id=${image.id}&dataset_id=${image.dataset_id}`}
+                          href={`${basePath}/image?id=${image.id}&dataset_id=${image.dataset_id}`}
                           className="text-blue-500 hover:underline"
                         >
                           View Image
